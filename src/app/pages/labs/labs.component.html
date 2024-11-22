@@ -1,0 +1,12 @@
+<h1>Hello {{name() }}</h1>
+<h2>{{title}}</h2>
+
+
+<input type="text" [value]="name()" (change)="changeHandler($event)">
+
+
+<ul>
+  <li *ngFor="let task of tasks()">
+    {{task}}
+  </li>
+</ul>
