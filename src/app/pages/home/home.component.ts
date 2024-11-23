@@ -1,37 +1,70 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
+import { Component, computed, effect, Inject, Injector, OnInit, signal } from '@angular/core';
 import { task } from '../../models/task.model';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule
+  ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
 
-  readonly tasks = signal<task[]>([
-    {
-      id: Date.now(),
-      title: 'learn angular 17',
-      completed: false
-    },
-    {
-      id: Date.now(),
-      title: 'typescript in deep',
-      completed: false
-    },
-    {
-      id: Date.now(),
-      title: 'learn testing for routes',
-      completed: false
+  readonly tasks
+
+
+  newTaskControl = new FormControl('', { nonNullable: true, validators: [Validators.required] })
+  filter = signal<filterState>('all')
+
+  tasksByFilter = computed(() => {
+    const filter = this.filter();
+    const tasks = this.tasks();
+    switch (filter) {
+      case 'pending':
+        return tasks.filter(task => !task.completed)
+      case 'completed':
+        return tasks.filter(task => task.completed)
+      case 'all':
+      default:
+        return tasks
     }
-  ])
 
-  changeHandler(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const newTask = input.value;
-    this.addTask(newTask)
+  })
+
+  injector = Inject(Injector)
+  constructor(
+    private storageService: StorageService
+  ) {
+    this.tasks = signal<task[]>(this.storageService.getItemOnStorage<task[]>('tasks', []));
+    effect(() => {
+      const tasks = this.tasks();
+      this.storageService.setItemOnStorage(tasks, 'tasks', [])
+    })
+  }
+
+  ngOnInit(): void {
+    // this.trackTasks();
+  }
+
+  // trackTasks() {
+  //   effect(() => {
+  //     const tasks = this.tasks();
+  //     this.storageService.setItemOnStorage(tasks, 'tasks', [])
+  //   }, { injector: this.injector })
+  // }
+
+  changeHandler() {
+    if (!this.newTaskControl.valid) return;
+    const newTask = this.newTaskControl.value.trim();
+    if (newTask != '') {
+      this.addTask(newTask)
+    }
+    this.newTaskControl.reset();
   }
 
   addTask(title: string) {
@@ -61,4 +94,45 @@ export class HomeComponent {
       })
     })
   }
+  updateTaskText(index: number, event: Event) {
+    const input = event.target as HTMLInputElement
+    this.tasks.update((tasks) => {
+      return tasks.map((task, position) => {
+        if (position == index) {
+          return {
+            ...task,
+            title: input.value,
+            editing: false
+          }
+
+        }
+        return task
+      })
+    })
+  }
+
+  updateTaskEditingMode(index: number) {
+    this.tasks.update((tasks) => {
+      return tasks.map((task, position) => {
+        if (position == index) {
+          return {
+            ...task,
+            editing: true
+          }
+
+        }
+        return {
+          ...task,
+          editing: false
+        }
+      })
+    })
+  }
+
+  changeFilter(filter: filterState) {
+    this.filter.set(filter)
+  }
 }
+
+
+export type filterState = 'all' | 'pending' | 'completed';

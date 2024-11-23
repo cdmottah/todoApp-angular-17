@@ -1,12 +1,75 @@
 <h1>Hello {{name() }}</h1>
 <h2>{{title}}</h2>
 
+<h1>If</h1>
 
 <input type="text" [value]="name()" (change)="changeHandler($event)">
+<input type="number" [value]="age()" (change)="changeAge($event)">
+
+<h2>old</h2>
+
+<div *ngIf="name() == 'cristian'">hola soy cristian</div>
+<strong *ngIf="name() == 'cristian'" ; else #anotherName>hola soy cristian y soy mayor de edad</strong>
+<ng-template #anotherName><small>hola soy cristian y soy menor de edad</small></ng-template>
+
+<h2>new</h2>
+@if (name() == 'cristian') {
+<div>hola soy cristian</div>
+}
 
 
+@if( age() >= 18){
+<strong>hola soy cristian y soy mayor de edad</strong>
+}@else{
+<small>hola soy cristian y soy menor de edad</small>
+}
+
+<h1>For</h1>
+
+<h2>old</h2>
 <ul>
-  <li *ngFor="let task of tasks()">
-    {{task}}
+  <li *ngFor="let task of tasks(); let i = index">
+    {{ i }} {{task}}
   </li>
 </ul>
+
+<h2>new</h2>
+<ul>
+  @for (task of tasks(); track task; let i = $index) {
+  <li>
+    {{ i }} {{task}}
+  </li>
+  }@empty {
+  <li> <strong>la lista está vacía</strong></li>
+  }
+</ul>
+
+
+<h1>switch</h1>
+
+
+<h2>old</h2>
+
+<ng-container *ngSwitch="name()">
+  <div *ngSwitchCase="'nicolas'">Hola Nicolas</div>
+  <div *ngSwitchCase="'cristian'">Hola Cristian</div>
+  <div *ngSwitchCase="'camilo'">Hola Camilo</div>
+  <div *ngSwitchDefault="">Hola desconocido</div>
+</ng-container>
+
+<h2>new</h2>
+
+@switch (name()) {
+@case ('nicolas') { <div>Hola Nicolas</div> }
+@case ('cristian') { <div>Hola Cristian</div> }
+@case ('camilo') { <div>Hola Camilo</div> }
+@default { <div>Hola desconocido</div> }
+}
+
+<input type="color" [formControl]="colorControl">
+
+<svg>
+  <g>
+    <rect x="0" y="0" height="100" width="100" [attr.fill]="colorControl.value"></rect>
+  </g>
+</svg>
