@@ -11,17 +11,16 @@
     <!-- This section should be hidden by default and shown when there are todos -->
     <section class="main">
       <ul class="todo-list">
-        <li
-        [class.completed]="task.completed"
-        [class.editing]="task.editing"
-         *ngFor="let task of tasksByFilter(); index as i" (dblclick)="updateTaskEditingMode(i)">
+        @for (task of tasksByFilter(); track task; let i = $index) {
+        <li [class.completed]="task.completed" [class.editing]="task.editing" (dblclick)="updateTaskEditingMode(i)">
           <div class="view">
             <input class="toggle" type="checkbox" [checked]="task.completed" (change)="updateTask(i)" />
             <label>{{task.title}}</label>
             <button class="destroy" (click)="deleteTask(i)"></button>
           </div>
-          <input class="edit" [value]="task.title" (keydown.enter)="updateTaskText(i,$event)"/>
+          <input class="edit" [value]="task.title" (keydown.enter)="updateTaskText(i,$event)" />
         </li>
+        }
       </ul>
     </section>
     <!-- This footer should be hidden by default and shown when there are todos -->

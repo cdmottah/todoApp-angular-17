@@ -1,15 +1,14 @@
-import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { Component, computed, effect, Inject, Injector, OnInit, signal } from '@angular/core';
 import { task } from '../../models/task.model';
 import { StorageService } from '../../services/storage.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-home',
   imports: [
-    CommonModule,
     ReactiveFormsModule
-  ],
+],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
