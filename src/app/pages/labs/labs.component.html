@@ -9,8 +9,8 @@
 <h2>old</h2>
 
 <div *ngIf="name() == 'cristian'">hola soy cristian</div>
-<strong *ngIf="name() == 'cristian'" ; else #anotherName>hola soy cristian y soy mayor de edad</strong>
-<ng-template #anotherName><small>hola soy cristian y soy menor de edad</small></ng-template>
+<strong *ngIf="age() >= 18 ; else younger">hola soy cristian y soy mayor de edad</strong>
+<ng-template #younger><small>hola soy cristian y soy menor de edad</small></ng-template>
 
 <h2>new</h2>
 @if (name() == 'cristian') {
